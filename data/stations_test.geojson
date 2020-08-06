@@ -1,0 +1,21 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "x": 4.868969,
+                "y": 45.715150
+            },
+            "properties": {
+                "name": "SERFIM",
+                "zone": "lyon",
+                "address": "Chemin de Tâche Velin",
+                "postcode": 69200,
+                "city": "venissieux",
+                "capacity": 200
+            }
+        }
+    ]
+}
