@@ -1,6 +1,8 @@
 from arcgis.gis import GIS
+import asyncio
 import requests
 import time
+import random
 
 
 class ArcGISservices:
@@ -15,9 +17,9 @@ class ArcGISservices:
         search_results = self.GIS.content.search(query=query, max_items=10)
         return search_results[-1].layers[-1]
 
-    def create_feature_layer(self, properties, data_file_location):
+    def create_feature_layer(self, attributes, data_file_location):
         try:
-            test_shp = self.GIS.content.add(properties, data=data_file_location)
+            test_shp = self.GIS.content.add(attributes, data=data_file_location)
             return test_shp.publish()
         except Exception as e:
             print("Couldn't create the feature layer. {}".format(str(e)))
@@ -160,3 +162,125 @@ class ArcGISservices:
         analysis_url = (self.get_analysis_url('https://www.arcgis.com/sharing/rest', token))
         analysis_job = self.analysis_job(analysis_url, task, token, parameters)
         return self.analysis_job_status(analysis_job.get('task_url'), analysis_job.get('job'), token)
+
+    def auto_update(self, layerName):
+        while True:
+            print('updated layer')
+            new_values = [
+                {
+                    "attributes": {
+                        "ObjectId": 1,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 2,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 3,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 4,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 5,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 6,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 7,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 8,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 9,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 10,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 11,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 12,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 13,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 14,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 15,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 16,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 17,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 18,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                },
+                {
+                    "attributes": {
+                        "ObjectId": 19,
+                        "vehicles_at_station": random.randint(0, 15)
+                    }
+                }
+            ]
+            self.update_feature(new_values, layerName)
+            time.sleep(15)

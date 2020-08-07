@@ -1,8 +1,12 @@
 import falcon
 import arcGIStest
 import json
+import threading
 
 GIS = arcGIStest.ArcGISservices()
+
+thread = threading.Thread(target=GIS.auto_update, args=('stations_vehicles',))
+thread.start()
 
 
 def set_response(resp, body, status=falcon.HTTP_OK, content_type=falcon.MEDIA_JSON):
