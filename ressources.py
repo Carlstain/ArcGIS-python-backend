@@ -27,13 +27,13 @@ class SpatialAnalysisCalculation(object):
 class EditLayer(object):
     def on_put(self, req, resp):
         data = json.loads(req.stream.read())
-        if data['action'] == 'add':
+        if data['action'] == 'adds':
             item = GIS.create_feature(data['elements'], data['layerName'])
             set_response(resp, json.dumps(item))
-        elif data['action'] == 'remove':
+        elif data['action'] == 'deletes':
             item = GIS.remove_feature(data['elements'], data['layerName'])
             set_response(resp, json.dumps(item))
-        elif data['action'] == 'edit':
+        elif data['action'] == 'updates':
             item = GIS.update_feature(data['elements'], data['layerName'])
             set_response(resp, json.dumps(item))
         else:
