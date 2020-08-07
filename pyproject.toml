@@ -5,7 +5,7 @@ description = ""
 authors = ["'MED' <'rickyblackwall@gmail.com'>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.6.1"
 arcgis = "^1.8.2"
 falcon = "^2.0.0"
 falcon-cors = "^1.1.7"
