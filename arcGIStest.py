@@ -1,5 +1,4 @@
 from arcgis.gis import GIS
-import asyncio
 import requests
 import time
 import random
@@ -65,7 +64,7 @@ class ArcGISservices:
         #  getting the token.
         #
         token_url = "{}/generateToken".format(portal_url)
-        params = "username={}&password={}&referer=http://www.arcgis.com&f=json"\
+        params = "username={}&password={}&referer=http://www.arcgis.com&f=json" \
             .format(self.username, self.password)
         headers = {
             'content-type': "application/x-www-form-urlencoded",
@@ -113,12 +112,12 @@ class ArcGISservices:
         #
         print("Submitting analysis job...")
 
-        params["f"] = "json"
-        params["token"] = token
-        headers = {"Referer": "http://www.arcgis.com"}
+        headers = {"Referer": "http://www.arcgis.com", "Content-Type": "application/x-www-form-urlencoded"}
         task_url = "{}/{}".format(analysis_url, task)
-        submit_url = "{}/submitJob".format(task_url)
-        analysis_response = requests.request(method='GET', url=submit_url, headers=headers, params=params).json()
+        submit_url = "{}/submitJob?f=json&token={}".format(task_url, token)
+        for (index, key) in enumerate(params.keys()):
+            submit_url += "&{}={}".format(key, str(params[key]))
+        analysis_response = requests.request(method='GET', url=submit_url, headers=headers).json()
         if analysis_response.get('jobId'):
             return {'task_url': task_url, 'job': analysis_response}
         else:
@@ -141,27 +140,53 @@ class ArcGISservices:
                     print(job_response.get('jobStatus'))
 
                     if job_response.get('jobStatus') == 'esriJobFailed':
-                        print('Job failed.')
-                        break
+                        raise Exception('Job failed.')
                     elif job_response.get('jobStatus') == 'esriJobCancelled':
-                        print('Job cancelled.')
-                        break
+                        raise Exception('Job cancelled.')
                     elif job_response.get('jobStatus') == 'esriJobTimedOut':
-                        print('Job timed out.')
-                        break
+                        raise Exception('Job timed out.')
                 if job_response.get('results'):
-                    return job_response.get('results')
+                    return job_response
             else:
                 raise Exception("No job results.")
         else:
             raise Exception("No job url.")
+
+    def analysis_job_results(self, task_url, job_info, token):
+        """ Use the job result json to get information about the feature service
+            created from the Analysis job."""
+
+        # Get the paramUrl to get information about the Analysis job results.
+        #
+        if job_info.get('jobId'):
+            job_id = job_info.get('jobId')
+            if job_info.get('results'):
+                results = job_info.get('results')
+                result_values = {}
+                for key in list(results.keys()):
+                    param_value = results[key]
+                    if param_value.get('paramUrl'):
+                        param_url = param_value.get('paramUrl')
+                        result_url = "{}/jobs/{}/{}?token={}&f=json".format(task_url,
+                                                                            job_id,
+                                                                            param_url,
+                                                                            token)
+                        request_results = requests.request(method='GET', url=result_url).json()
+                        job_value = request_results.get('value')
+                        result_values[key] = job_value
+                return result_values
+            else:
+                raise Exception("Unable to get analysis job results.")
+        else:
+            raise Exception("Unable to get analysis job results.")
 
     def spatial_analysis(self, task, parameters):
 
         token = self.get_analysis_service_token('https://www.arcgis.com/sharing/rest')
         analysis_url = (self.get_analysis_url('https://www.arcgis.com/sharing/rest', token))
         analysis_job = self.analysis_job(analysis_url, task, token, parameters)
-        return self.analysis_job_status(analysis_job.get('task_url'), analysis_job.get('job'), token)
+        job_response = self.analysis_job_status(analysis_job.get('task_url'), analysis_job.get('job'), token)
+        return self.analysis_job_results(analysis_job.get('task_url'), job_response, token)
 
     def auto_update(self, layerName):
         while True:
