@@ -2,12 +2,13 @@ from arcgis.gis import GIS
 import requests
 import time
 import random
+import json
 
 
 class ArcGISservices:
 
     def __init__(self):
-        self.username = 'Persee'
+        self.username = 'med.persee'
         self.password = 'Couscous1789'
         self.GIS = GIS("https://www.arcgis.com", self.username, self.password)
 
@@ -34,6 +35,13 @@ class ArcGISservices:
         feature_layer = self.get_layer_with_name(layer_name=layer_name)
         try:
             return feature_layer.edit_features(deletes=feature_ids)
+        except Exception as e:
+            return "Couldn't delete the features. {}".format(str(e))
+
+    def remove_all_feature(self, layer_name):
+        feature_layer = self.get_layer_with_name(layer_name=layer_name)
+        try:
+            return feature_layer.delete_features()
         except Exception as e:
             return "Couldn't delete the features. {}".format(str(e))
 
@@ -308,4 +316,13 @@ class ArcGISservices:
                 }
             ]
             self.update_feature(new_values, layerName)
-            time.sleep(15)
+            time.sleep(60)
+
+
+class DBservices:
+
+    def getStations(self, station_id=None):
+        stations = json.load(open('data/mockedUpFr.json'))
+        if station_id:
+            return next(filter(lambda station: station['id'] == int(station_id), stations))
+        return stations

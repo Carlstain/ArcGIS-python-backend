@@ -25,5 +25,6 @@ app.add_route("/arc-api/v", Version())
 app.add_route("/arc-api/routing-token", ressources.RoutingServiceToken())
 app.add_route("/arc-api/spatial-analysis", ressources.SpatialAnalysisCalculation())
 app.add_route("/arc-api/edit-layer", ressources.EditLayer())
+app.add_route("/arc-api/stations", ressources.GetStations())
 if __name__ == '__main__':
     serve(app=app, host='localhost', port=8181)
